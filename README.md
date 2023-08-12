@@ -17,6 +17,17 @@ an existing Jepsen test and takes the role of the nemesis, deciding in real-time
 which actions to inject and when, based on the _runtime_ behaviour of the system
 under test.
 
+# Cite Mallory
+Mallory has been accepted for publication at the 30th ACM Conference on Computer and Communications Security (CCS 2023).
+
+```
+@inproceedings{mallory,
+author={Ruijie Meng, George Pirlea, Abhik Roychoudhury and Ilya Sergey},
+title={Greybox Fuzzing of Distributed Systems},
+booktitle={Proceedings of the 30th ACM Conference on Computer and Communications Security (CCS)},
+year={2023},}
+```
+
 ## Design Overview
 
 ### Jepsen
