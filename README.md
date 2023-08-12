@@ -22,7 +22,7 @@ Mallory has been accepted for publication at the 30th ACM Conference on Computer
 
 ```
 @inproceedings{mallory,
-author={Ruijie Meng, George Pirlea, Abhik Roychoudhury and Ilya Sergey},
+author={Ruijie Meng, George P{\^i}rlea, Abhik Roychoudhury and Ilya Sergey},
 title={Greybox Fuzzing of Distributed Systems},
 booktitle={Proceedings of the 30th ACM Conference on Computer and Communications Security (CCS)},
 year={2023},}
@@ -181,6 +181,20 @@ A much simpler one:
        (concat [(member-package opts)])
        (remove nil?)))
 ```
+
+
+## Contributions
+
+### Contributors
+
+  * Ruijie Meng
+  * George P{\^i}rlea
+  * Abhik Roychoudhury
+  * Ilya Serge
+
+### Other Contributors
+
+We use [Jepsen](https://jepsen.io/) as the underlying tool. Thanks to Jepsen's developers. We also welcome other contributors to improve and extend Mallory.
 
 ## License
 
