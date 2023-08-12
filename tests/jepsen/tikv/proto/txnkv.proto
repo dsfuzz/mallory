@@ -1,0 +1,61 @@
+syntax = "proto3";
+package tikv.txn;
+
+import "error.proto";
+
+service Client {
+    rpc BeginTxn (BeginTxnRequest) returns (BeginTxnReply);
+    rpc Get (GetRequest) returns (GetReply);
+    rpc Put (PutRequest) returns (PutReply);
+    rpc Commit (CommitRequest) returns (CommitReply);
+    rpc Rollback (RollbackRequest) returns (RollbackReply);
+}
+
+message BeginTxnRequest {
+    enum Type {
+        OPTIMISTIC = 0;
+        PESSIMISTIC = 1;
+    }
+    Type type = 1;
+}
+
+message BeginTxnReply {
+    fixed32 txn_id = 1;
+    tikv.error.Error error = 2;
+}
+
+message GetRequest {
+    fixed32 txn_id = 1;
+    string key = 2;
+}
+
+message GetReply {
+    string value = 1;
+    tikv.error.Error error = 2;
+}
+
+message PutRequest {
+    fixed32 txn_id = 1;
+    string key = 2;
+    string value = 3;
+}
+
+message PutReply {
+    tikv.error.Error error = 1;
+}
+
+message CommitRequest {
+    fixed32 txn_id = 1;
+}
+
+message CommitReply {
+    tikv.error.Error error = 1;
+}
+
+message RollbackRequest {
+    fixed32 txn_id = 1;
+}
+
+message RollbackReply {
+    tikv.error.Error error = 1;
+}

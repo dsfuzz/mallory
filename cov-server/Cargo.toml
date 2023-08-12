@@ -1,0 +1,35 @@
+[package]
+name = "cov-server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = { version = "0.5.0-rc.2", features = ["json"] }
+log = "0.4"
+fern = "0.6"
+lz4_flex = "0.9.5"
+reqwest = { version = "0.11.12", features = ["json"] }
+ctrlc = { version = "3.0", features = ["termination"] }
+base64 = "0.13.0"
+tokio = "1.21.2"
+libc = "0.2.135"
+chrono = "0.4"
+nix = "0.25.0"
+
+# Global state and configuration
+state = "0.5"
+config = "0.13.2"
+
+# sniff packets
+nfq = { git = "https://github.com/nbdd0121/nfq-rs", rev = "27b3ee13596b5ecfb786014021fab31721c78cfd" }
+ifcfg = "0.1.2"
+ipnetwork = "0.20.0"
+iptables = "0.5.0"
+
+local-ip-address = "0.4.9"
+dns-lookup = "1.0.8"
+pcap = "1.0.0"
+pnet = "0.33.0"
+siphasher = "0.3.10"

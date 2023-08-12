@@ -1,0 +1,93 @@
+version: '3.7'
+x-node:
+  &default-node
+  image: jepsen_node
+  env_file: ./secret/node.env
+  secrets:
+    - authorized_keys
+  tty: true
+  tmpfs:
+    - /run:size=100M
+    - /run/lock:size=100M
+  # https://serverfault.com/questions/1053187/systemd-fails-to-run-in-a-docker-container-when-using-cgroupv2-cgroupns-priva
+  cgroup_parent: docker.slice
+  volumes:
+    - "jepsen-shared:/var/jepsen/shared"
+    - "/jepsen:/host"
+  # The lines below are to allow FUSE to work in the container
+    - "/lib/modules:/lib/modules"
+  devices:
+    - "/dev/fuse"
+  security_opt:
+      - apparmor:unconfined
+      - seccomp=unconfined  # lets GDB disable address space randomization
+  networks:
+    - jepsen
+  privileged: true
+  cap_add:
+    - ALL
+  ports:
+    - ${JEPSEN_PORT:-22}
+
+volumes:
+  jepsen-shared:
+
+secrets:
+  authorized_keys:
+    file: ./secret/authorized_keys
+
+networks:
+  # This allows all traffic (to central & Internet, but NOT between nodes)
+  # primarily used for sending out-of-band information to the central node
+  # we set this up via an iptables rule to DROP all traffic on this subnet
+  # except traffic to/from the gateway and to/from the central node
+
+  # NOTE: This is disabled because it does not interoperate well with DNS.
+  # Many systems use DNS to resolve other nodes' addresses and get the
+  # unreachable IP rather than the reachable one.
+  
+  # sidenet:
+  #   ipam:
+  #     config:
+  #       - subnet: 172.16.0.0/24
+  #         gateway: 172.16.0.1
+
+  # networks used for experiments
+%%NETWORKS%%
+
+services:
+  # This is a hack to only build the node image once, rather than for every node
+  # https://stackoverflow.com/a/68801955
+  _build_node_image:
+    image: jepsen_node
+    build: ./node
+    # Make sure docker-compose doesn't try to start this
+    # https://stackoverflow.com/questions/37254881/is-there-any-way-to-disable-a-service-in-docker-compose-yml
+    scale: 0
+
+  control:
+    container_name: jepsen-control
+    hostname: control
+    depends_on:
+%%DEPS%%
+    build: ./control
+    image: jepsen_control
+    env_file: ./secret/control.env
+    privileged: true
+    ports:
+      - "22"
+      - "8080:8080"
+      - "5000:5000"
+    dns:
+      "127.0.0.1" # Control runs its own DNS server, which the Docker DNS server (127.0.0.11) queries!
+    networks:
+      # sidenet:
+      #   ipv4_address: "172.16.0.2"    
+%%CONTROLNETS%%
+    volumes:
+      - "jepsen-shared:/var/jepsen/shared"
+      - "/home/ubuntu/distributed-fuzzing:/host"
+    extra_hosts:
+    #   - "control:172.16.0.2"
+%%CONTROLHOSTS%%
+%%DBS%%

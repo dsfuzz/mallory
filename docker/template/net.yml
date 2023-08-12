@@ -1,0 +1,5 @@
+  net%%N%%:
+    ipam:
+      config:
+        - subnet: 10.1.%%N%%.0/24
+          gateway: 10.1.%%N%%.1

@@ -1,0 +1,13 @@
+iptables_rules_filename = '/tmp/iptables-rules.txt'
+
+# Packets
+experiment_network = "10.1.0.0/16"
+nfqueue_queue_num = 1
+nfqueue_max_len = 131072 # number of packets to queue
+
+# Coverage/instrumentation
+batch_duration_ms = 100
+
+# Mediator communication
+mediator_events_url = "http://control:5000/feedback/collect-local-events"
+mediator_seq_num_url = "http://control:5000/feedback/submit-sequence-number"

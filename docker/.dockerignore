@@ -1,0 +1,2 @@
+# Do not rebuild Jepsen if only the Rust mediator changed
+jepsen/mediator/rmed

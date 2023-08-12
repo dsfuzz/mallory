@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Builds a docker-compose file. You'd THINK we could do this with `replicas`
+# but nooooooo, down that path lies madness. Instead we're going to do some
+# janky templating with sed and awk. I am so, so sorry.
+
+# Takes a number of nodes to generate a file for, and emits a file
+# `docker-compose.yml`.
+
+NODE_COUNT=$1
+
+DEPS=""
+DBS=""
+NODE_HOSTS="#      - \"control:172.16.0.2\"\n"
+CONTROLHOSTS=""
+
+# TODO: remove node from its own NODE_HOSTS
+for ((n=1;n<=NODE_COUNT;n++)); do
+  HOST="      - \"n${n}:10.1.${n}.3\""
+  SIDENET_HOST="#      - \"n${n}:172.16.0.$((n + 2))\""
+  CONTROL_HOST="      - \"n${n}:10.1.${n}.3\""
+  NODE_HOSTS="${NODE_HOSTS}${HOST}"$'\n'
+  CONTROLHOSTS="${CONTROLHOSTS}${CONTROL_HOST}"$'\n'
+done
+export NODE_HOSTS
+export CONTROLHOSTS
+
+# For each node
+for ((n=1;n<=NODE_COUNT;n++)); do
+  # Build up deps for control
+  # intentionally only the last node
+  LINE=`cat template/depends.yml | sed s/%%N%%/${NODE_COUNT}/g`
+  DEPS="${LINE}"$'\n'
+
+  # Build up DB service
+  DB=$(cat template/db.yml | sed s/%%N%%/"${n}"/g | sed s/%%NPT%%/"$((n + 2))"/g | awk ' {gsub(/%%NODE_HOSTS%%/, ENVIRON["NODE_HOSTS"]); print} ')
+  if [ $n -ge 2 ]; then
+    DB=`echo -e "$DB" | sed s/%%NM%%/-\\ n$((n - 1))/g`;
+  else
+    DB=`echo -e "$DB" | sed s/%%NM%%//g`;
+  fi
+  DBS="${DBS}${DB}"$'\n'
+
+  NET=`cat template/net.yml | sed s/%%N%%/${n}/g`
+  NETWORKS="${NETWORKS}${NET}"$'\n'
+
+  CNET=`cat template/control-net-join.yml | sed s/%%N%%/${n}/g`
+  CONTROLNETS="${CONTROLNETS}${CNET}"$'\n'
+done
+
+# Build docker-compose file
+export DEPS
+export DBS
+export NETWORKS
+export CONTROLNETS
+cat template/docker-compose.yml |
+  awk ' {gsub(/%%DEPS%%/, ENVIRON["DEPS"]); print} ' |
+  awk ' {gsub(/%%NETWORKS%%/, ENVIRON["NETWORKS"]); print} ' |
+  awk ' {gsub(/%%CONTROLNETS%%/, ENVIRON["CONTROLNETS"]); print} ' |
+  awk ' {gsub(/%%DBS%%/, ENVIRON["DBS"]); print} ' |
+  awk ' {gsub(/%%CONTROLHOSTS%%/, ENVIRON["CONTROLHOSTS"]); print} ' \
+  > docker-compose.yml

@@ -1,0 +1,21 @@
+[package]
+name = "client-rust-server"
+version = "0.1.0"
+authors = ["Ziyi Yan <ziyi.yan@foxmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tonic = "0.4"
+prost = "0.7"
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+tikv-client = { git = "https://github.com/tikv/client-rust.git" }
+tikv-client-common = { git = "https://github.com/tikv/client-rust.git" }
+fork = "0.1.18"
+clap = "2.33.3"
+log = "0.4"
+simple-logging = "2"
+
+[build-dependencies]
+tonic-build = "0.4"

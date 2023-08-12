@@ -1,0 +1,29 @@
+experiment_network = "10.1.0.0/16"
+unfiltered_ports = [22, 53, 10000, 58080]
+# we assume there (at most) as many nodes as there are interfaces on the
+# mediator and that they follow this naming scheme for DNS/hostnames.
+node_name_format = "n{}" # n1, n2, n3, etc.
+bucket_interval_ms = 10
+
+# we assume nodes' clocks are synchronized to within this many milliseconds
+clocks_synchronized_to_within_ms = 100
+statistics_print_interval_secs = 5
+
+nfqueue_queue_num = 1
+nfqueue_max_len = 131072 # number of packets to queue
+nfqueue_select_timeout_ns = 10000 # 0.01ms
+
+# Adaptive Nemesis configuration
+nemesis_schedule_duration_ms    = 30000 # how long is a nemesis "run"?
+nemesis_schedule_interval_ms    = 2500   # there is a "choice" every X ms
+nemesis_reset_duration_ms       = 2500  # how long do we wait after a reset before starting a new run?
+
+mediator_log_filename = "/tmp/mediator.log"
+shiviz_log_filename = "/tmp/shiviz.log"
+event_log_filename = "/tmp/events.log"
+iptables_rules_filename = '/tmp/iptables-rules.txt'
+
+mediator_store_folder = "mediator" # relative to the Jepsen test directory
+transmit_pcap_filename = "transmit.pcap"
+receive_pcap_filename = "receive.pcap"
+drop_pcap_filename = "drop.pcap"

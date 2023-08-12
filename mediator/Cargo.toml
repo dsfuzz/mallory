@@ -1,0 +1,79 @@
+[package]
+name = "mediator"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = []
+# Asserts expensive invariants that need extra state to track.
+selfcheck = []
+logsaving = []
+
+[profile.release]
+lto = "thin"
+# debug = true # add debugging information even to release builds
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# Web framework, async, and serialization/deserialization
+rocket = { version = "0.5.0-rc.2", features = ["json"] }
+ron = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+reqwest = { version = "0.11.12", default-features = false, features = [
+    "rustls-tls",
+] }
+futures = "0.3.24"
+
+# Logging and misc
+log = "0.4"
+fern = "0.6"
+chrono = "0.4"
+ctrlc = { version = "3.0", features = ["termination"] }
+antidote = "1.0.0"
+rand = "0.8.5"
+
+# We use jemalloc, which is the default for Rust, but we use it explicitly
+# so we can make use of introspection tools like jemalloc-ctl
+tikv-jemallocator = "0.5.0"
+tikv-jemalloc-ctl = "0.5.0"
+byte-unit = "4.0.14"
+
+# Network and packet processing
+# We want a version with AsRawFd, which 0.2.5 does not have
+nfq = { git = "https://github.com/nbdd0121/nfq-rs", rev = "27b3ee13596b5ecfb786014021fab31721c78cfd" }
+ifcfg = "0.1.2"
+ipnetwork = "0.20.0"
+iptables = "0.5.0"
+nix = { version = "0.25.0", features = ["poll"] }
+pnet = "0.33.0"
+dns-lookup = "1.0.8"
+pcap-file = "1.1.1"
+siphasher = "0.3.10"
+
+# Global state and configuration
+state = "0.5"
+config = "0.13.2"
+crossbeam-queue = "0.3.6"
+crossbeam-epoch = "0.9.11"
+dashmap = { version = "5.4.0", features = ["serde"] }
+bztree = "0.2.0"
+petgraph = "0.6.2"
+probabilistic-collections = "0.7.0"
+
+# Adaptive nemesis
+nalgebra = { version = "0.31.3", features = ["serde-serialize"] }
+atomic_enum = "0.2.0"
+
+# History
+lz4_flex = "0.9.5"
+base64 = "0.13.0"
+cursor = "2.3.0"
+byteorder = "1.4.3"
+edn-format = "3.2.3"
+murmur3 = "0.5.2"
+# To use get_many_mut, which is still Nightly-only for std HashMap
+hashbrown = "0.13.1"
+enum_dispatch = "0.3.11"
+ordered-float = "3.4.0"
+tempfile = "3.3.0"

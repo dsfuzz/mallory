@@ -1,0 +1,8 @@
+[Unit]
+Description=CharybdeFS
+After=default.target
+[Service]
+ExecStart=/opt/charybdefs/run-charybdefs.sh
+RemainAfterExit=true
+[Install]
+WantedBy=default.target

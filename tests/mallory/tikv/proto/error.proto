@@ -1,0 +1,8 @@
+syntax = "proto3";
+package tikv.error;
+
+message Error {
+    string undetermined = 1;
+    string not_found = 2;
+    string aborted = 3;
+}

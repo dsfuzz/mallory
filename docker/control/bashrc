@@ -1,0 +1,38 @@
+eval $(ssh-agent) &> /dev/null
+ssh-add /root/.ssh/id_rsa &> /dev/null
+
+cat <<EOF
+Welcome to Jepsen on Docker
+===========================
+
+This container runs the Jepsen tests in sub-containers.
+
+You are currently in the base dir of the git repo for Jepsen.
+If you modify the core jepsen library make sure you "lein install" it so other tests can access.
+
+Access the shared (mounted) Jepsen directory via:
+   cd /host
+   
+To run a test:
+   Note:
+   cd /host/mediator && ./target/x86_64-unknown-linux-musl/release/mediator `schedule` `feedback` `state_similarity_threshold`
+      schedule = noop | power | qlearning
+      feedback = event_history | afl_branch | afl_branch_and_event_history
+      state_similarity_threshold = [0.0 - 1.0]
+   (in a separate shell)
+
+   Example:
+   cd /host/mediator && ./target/x86_64-unknown-linux-musl/release/mediator qlearning event_history 0.7
+
+   cd /host/tests/mallory/dqlite && lein run test --workload append --nemesis all --time-limit 65 --test-count 1
+
+   cd /host/tests/mallory/braft && lein run test --workload wr-register --time-limit 65 --test-count 1
+
+   cd /host/tests/mallory/scylladb && lein run test --workload list-append --nemesis all --time-limit 65 --test-count 1
+
+   cd /host/tests/mallory/mongodb && lein run test --workload list-append --nemesis all  --nodes-file ~/nodes --time-limit 65 --test-count 1 --sharded
+
+   cd /host/tests/mallory/redisraft && lein run test --workload append --nemesis all --follower-proxy --time-limit 65 --test-count 1
+
+   cd /host/tests/mallory/tikv && apt-get install pkg-config -qy && make build-client-rust-server && lein run test --workload list-append --nemesis all --time-limit 65 --test-count 1
+EOF

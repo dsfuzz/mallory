@@ -1,0 +1,17 @@
+  n%%N%%:
+    << : *default-node
+    container_name: jepsen-n%%N%%
+    hostname: n%%N%%
+    depends_on:
+      - _build_node_image
+      %%NM%%
+    dns:
+      - "10.1.%%N%%.2" # we use the DNS server on the control
+    networks:
+      net%%N%%:
+        ipv4_address: "10.1.%%N%%.3"
+      # sidenet:
+      #   ipv4_address: "172.16.0.%%NPT%%"
+    extra_hosts:
+      - "control:10.1.%%N%%.2"
+%%NODE_HOSTS%%

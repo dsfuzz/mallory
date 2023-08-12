@@ -1,0 +1,59 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/debian11"
+  # https://stackoverflow.com/questions/54264439/how-to-get-shared-folders-working-with-vagrant-and-hyper-v
+  config.vm.synced_folder "../", "/jepsen"
+  # config.vm.network "forwarded_port", guest: 8080, host: 8080
+  # config.vm.network "forwarded_port", guest: 5000, host: 5000
+
+  config.vm.provider "virtualbox" do |vb, override|
+    vb.gui = false
+    vb.cpus = 32
+    vb.memory = "32768"
+  end
+
+  # If you are running Hyper-V on your machine (e.g., running WSL 2 on Windows),
+  # then the VirtualBox provider _will_ work, but some CPU features will not be
+  # available in the VM; some software you run might expect these to exist.
+  # Using the Hyper-V provider passes (most) CPU features to the guest.
+  config.vm.provider "hyperv" do |h, override|
+    h.vm_integration_services = {
+      guest_service_interface: true,
+    }
+    h.cpus = 32
+    h.memory = 32768
+    h.maxmemory = 32768
+    h.enable_virtualization_extensions = true
+  end
+  
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get -y install ca-certificates curl gnupg lsb-release
+    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
+    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get -y install docker-ce docker-ce-cli containerd.io
+    
+    # To make life easier for us when we ssh into the machine
+    sudo apt-get -y install tmux htop vim dos2unix curl
+    sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+    sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    sudo systemctl enable --now docker
+
+    # https://serverfault.com/a/1083451
+    echo 'GRUB_CMDLINE_LINUX_DEFAULT=systemd.unified_cgroup_hierarchy=false' > /etc/default/grub.d/cgroup.cfg
+    update-grub
+
+    # Start NFQUEUE kernel module at boot
+    echo 'xt_NFQUEUE' >> /etc/modules
+    # Added for ScyllaDB, but might be useful for other systems as well
+    echo 'fs.aio-max-nr = 104857600' | sudo tee -a /etc/sysctl.conf
+    sudo sysctl -p /etc/sysctl.conf
+  SHELL
+  # Requires: vagrant plugin install vagrant-reload
+  # Make changes requiring reboot effective
+  config.vm.provision :reload
+end
