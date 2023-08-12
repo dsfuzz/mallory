@@ -188,9 +188,9 @@ A much simpler one:
 ### Contributors
 
   * Ruijie Meng
-  * George P{\^i}rlea
+  * George Pîrlea
   * Abhik Roychoudhury
-  * Ilya Serge
+  * Ilya Sergey
 
 ### Other Contributors
 
