@@ -18,14 +18,15 @@ which actions to inject and when, based on the _runtime_ behaviour of the system
 under test.
 
 ## Citing Mallory
-Mallory has been accepted for publication at the 30th ACM Conference on Computer and Communications Security (CCS 2023). 
+Mallory has been accepted for publication at the 2023 ACM SIGSAC Conference on Computer and Communications Security (CCS 2023). 
 The paper is also available on [arXiv](https://arxiv.org/pdf/2305.02601.pdf). If you use this code in your scientific work, please cite the paper as follows:
 ```
 @inproceedings{mallory,
-author={Ruijie Meng, George P{\^i}rlea, Abhik Roychoudhury and Ilya Sergey},
+author={Meng, Ruijie and P{\^\i}rlea, George and Roychoudhury, Abhik and Sergey, Ilya},
 title={Greybox Fuzzing of Distributed Systems},
-booktitle={Proceedings of the 30th ACM Conference on Computer and Communications Security (CCS)},
-year={2023},}
+booktitle={Proceedings of the 2023 ACM SIGSAC Conference on Computer and Communications Security},
+pages={1615--1629},
+year={2023}}
 ```
 
 ## Design Overview
